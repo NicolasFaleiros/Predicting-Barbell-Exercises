@@ -67,7 +67,7 @@ Further explanation for each step can be found inside the python files, where I 
 - The data was collected by the device multiple times a second. So I used a resample method to restructure the data in a way that every instance within 200ms is encompassed together by the mean and becomes the new observation.
 - A "set" column was added to the dataframe in the proccess to distinguish between the sets performed by each subject.
 
-** 6.3 Explore the data (exploratory data analysis)**
+**6.3 Explore the data (exploratory data analysis)**
 - 
 
 

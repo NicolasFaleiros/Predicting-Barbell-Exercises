@@ -45,6 +45,11 @@ mpl.rcParams["figure.dpi"] = 100
 # -----------------------------------------------------------------
 # Plot data for all exercises
 # -----------------------------------------------------------------
+"""
+This section plots accelerometer and gyroscope data agaisn't the exercises labels,
+to visualize their distribution and possible differences.
+"""
+
 columns = df.columns[:6]
 
 for col in columns:
@@ -60,13 +65,22 @@ for col in columns:
         ax[row, col_index].plot(subset[col].reset_index(drop=True), label=label)
         ax[row, col_index].set_title(label, fontsize=30)
 
-    plt.suptitle(col, fontsize=50, y=1.02)
+    plt.suptitle(col, fontsize=50, y=1.005)
     plt.tight_layout()  # Adjust layout to prevent overlapping titles
+    plt.savefig(f"../../reports/figures/acc_gyr_comparion_per_label/{col}.png")
     plt.show()
+
 
 # -----------------------------------------------------------------
 # Compare medium vs heavy sets
 # -----------------------------------------------------------------
+"""
+This section plots accelerometer and gyroscope data segmented by the exercise category
+('heavy', 'medium', 'sitting', 'standing'), to visualize possible distribution differences
+between medium and heavy exercises, which could be useful for a machine learning model
+to differentiate sets.
+"""
+
 columns = df.columns[:6]
 
 for col in columns:
@@ -84,15 +98,24 @@ for col in columns:
             col_index = idx % 3  # Calculate the column index in the subplot grid
 
             participant_category_df.groupby(["category"])[col].plot(
-                ax=ax[row, col_index], label=label
+                ax=ax[row, col_index]
             )
             ax[row, col_index].set_title(label, fontsize=30)
 
+            # Get the resulting labels (unique categories)
+            handles, labels = ax[row, col_index].get_legend_handles_labels()
+
+            # Set the legend with the resulting labels
+            ax[row, col_index].legend(handles, labels, loc="upper right")
+
         plt.suptitle(
-            f"Medium vs Heavy set | {participant} | {col}", fontsize=50, y=1.02
+            f"Medium vs Heavy set | {participant} | {col}", fontsize=50, y=1.005
         )
-        plt.tight_layout()  # Adjust layout to prevent overlapping titles
-        plt.legend()
+        plt.tight_layout()
+
+        plt.savefig(
+            f"../../reports/figures/acc_gyr_comparison_medium_heavy/{col} ({participant}).png"
+        )
         plt.show()
 
 
@@ -100,23 +123,58 @@ for col in columns:
 # Comparing participants
 # -----------------------------------------------------------------
 
-acc_col = ["acc_x", "acc_y", "acc_z"]
+"""
+This sections plots accelerometer and gyroscope data segmented by participant, to
+visualize possible distribution differences between participants.
+"""
+
+columns = df.columns[:6]
 
 for label in df["label"].unique():
     participants_df = (
         df.query(f"label == '{label}'").sort_values("participant").reset_index()
     )
 
-    fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(20, 12))
+    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(20, 12))
 
-    for i, col in enumerate(acc_col):
-        participants_df.groupby(["participant"])[col].plot(ax=ax[i])
-        ax[i].set_ylabel(f"{col}")
-        ax[i].set_xlabel("samples")
-        ax[i].set_title(col, fontsize=20, loc="right")
-        ax[i].legend()
+    for i, col in enumerate(columns):
+        row = i // 3  # Calculate the row index
+        col_index = i % 3  # Calculate the column index
+
+        participants_df.groupby(["participant"])[col].plot(ax=ax[row, col_index])
+        ax[row, col_index].set_ylabel(f"{col}")
+        ax[row, col_index].set_xlabel("samples")
+        ax[row, col_index].set_title(col, fontsize=20, loc="right")
+        ax[row, col_index].legend(loc="upper right")
 
     plt.suptitle(label, fontsize=30)
+    plt.tight_layout()
+    plt.savefig(f"../../reports/figures/acc_gyr_comparison_per_participant/{label}.png")
+    plt.show()
+
+columns = df.columns[:6]
+
+for col in columns:
+    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(20, 12))
+
+    for idx, label in enumerate(df["label"].unique()):
+        row = idx // 3  # Calculate the row index
+        col_index = idx % 3  # Calculate the column index
+
+        participants_df = (
+            df.query(f"label == '{label}'").sort_values("participant").reset_index()
+        )
+
+        participants_df.groupby(["participant"])[col].plot(ax=ax[row, col_index])
+        ax[row, col_index].set_ylabel(f"{col}")
+        ax[row, col_index].set_xlabel("samples")
+        ax[row, col_index].set_title(label, fontsize=20, loc="right")
+        ax[row, col_index].legend(loc="upper right")
+
+    plt.suptitle(col, fontsize=30)
+    plt.tight_layout()
+    plt.savefig(f"../../reports/figures/acc_gyr_comparison_per_participant/{col}.png")
+    plt.show()
 
 # -----------------------------------------------------------------
 # Plot multiple axis
@@ -144,6 +202,7 @@ plt.legend()
 labels = df["label"].unique()
 participants = df["participant"].unique()
 
+# Accelerometer
 for label in labels:
     for participant in participants:
         all_axis_df = (
@@ -160,6 +219,7 @@ for label in labels:
             plt.title(f"{label} ({participant})".title())
             plt.legend()
 
+# Gyroscope
 for label in labels:
     for participant in participants:
         all_axis_df = (
@@ -212,9 +272,16 @@ ax[1].legend(
 )
 ax[1].set_xlabel("samples")
 
+plt.suptitle(f"{label} ({participant})", fontsize=30, y=1.005)
+
 # -----------------------------------------------------------------
 # Loop over all combinations and export for both sensors
 # -----------------------------------------------------------------
+
+"""
+This section plots a comparison between accelerometer and gyroscope distribution
+agains't each exercise and participant.
+"""
 
 labels = df["label"].unique()
 participants = df["participant"].unique()
@@ -251,22 +318,46 @@ for label in labels:
             )
             ax[1].set_xlabel("samples")
 
-            plt.savefig(f"../../reports/figures/{label.title()} ({participant}).png")
+            plt.suptitle(f"{label} ({participant})", fontsize=30, y=1.005)
+            plt.savefig(
+                f"../../reports/figures/acc_gyr_series/{label.title()} ({participant}).png"
+            )
             plt.show()
 
 
-def plot_highest_highest(dataset):
+# -----------------------------------------------------------------
+# Functions to auxiliate plotting elsewhere
+# -----------------------------------------------------------------
+
+
+def plot_highest_highest(dataset, x, y, hue):
+    """
+    Function to plot a bar graph in which the x-axis is a categorical variable,
+    the y-axis is a numerical variable and the hue is a categorical variable.
+    The bars associated with the two highest values in each section will be highlighted
+    in shades of green, with proper annotations.
+
+    Args:
+        dataset (pd.DataFrame): The dataset
+        x (str): The column name representing the categorical variable for the x-axis.
+        y (str): The column name representing the numerical variable for the y-axis.
+        hue (str): The column name representing the categorical variable for the hue.
+
+    Returns:
+        matplotlib.axes.Axes: The axis object containing the barplot.
+    """
+
     plt.figure(figsize=(15, 15))
     ax = sns.barplot(
-        x="model",
-        y="accuracy",
-        hue="feature_set",
+        x=x,
+        y=y,
+        hue=hue,
         data=dataset,
         palette=["lightgrey"],
         edgecolor="darkgrey",
     )
 
-    categories = dataset["model"].unique()
+    categories = dataset[x].unique()
 
     # Calculate the maximum height of the bars
     max_bar_height = max([patch.get_height() for patch in ax.patches])
@@ -285,13 +376,13 @@ def plot_highest_highest(dataset):
         y_value = patch.get_height()
 
         # Find the highest and second highest y values for the current category
-        highest_y = dataset[(dataset["model"] == category)]["accuracy"].max()
+        highest_y = dataset[(dataset[x] == category)][y].max()
 
-        second_highest_y = dataset[
-            (dataset["model"] == category) & (dataset["accuracy"] < highest_y)
-        ]["accuracy"].max()
+        second_highest_y = dataset[(dataset[x] == category) & (dataset[y] < highest_y)][
+            y
+        ].max()
 
-        feature_set = dataset["feature_set"].iloc[i]
+        feature_set = dataset[hue].iloc[i]
 
         cluster_center_x = ax.patches[i].get_x() + ax.patches[i].get_width() / 2
 
@@ -323,30 +414,44 @@ def plot_highest_highest(dataset):
                 color="#778D45",
             )
 
-        # elif y_value == lowest_y:
-        #    patch.set_color("indianred") # Highlight the bar with the lowest y value in lighter green
-
     ax.legend_.remove()
 
     plt.suptitle("Highest and second-highest accuracy for each algorithm", fontsize=20)
-    plt.xlabel("Model")
-    plt.ylabel("Accuracy")
+    plt.xlabel(f"{x}")
+    plt.ylabel(f"{y}")
     plt.ylim(0.7, 1.02)
     plt.show()
 
 
-def plot_highest_lowest(dataset):
+def plot_highest_lowest(dataset, x, y, hue):
+    """
+    Function to plot a bar graph in which the x-axis is a categorical variable,
+    the y-axis is a numerical variable and the hue is a categorical variable.
+    The bars associated with the highest value in each section will be highlighted
+    in green, while the bars associated with the lowest values will be highlighted
+    in red, with proper annotations.
+
+    Args:
+        dataset (pd.DataFrame): The dataset
+        x (str): The column name representing the categorical variable for the x-axis.
+        y (str): The column name representing the numerical variable for the y-axis.
+        hue (str): The column name representing the categorical variable for the hue.
+
+    Returns:
+        matplotlib.axes.Axes: The axis object containing the barplot.
+    """
+
     plt.figure(figsize=(15, 15))
     ax = sns.barplot(
-        x="model",
-        y="accuracy",
-        hue="feature_set",
+        x=x,
+        y=y,
+        hue=hue,
         data=dataset,
         palette=["lightgrey"],
         edgecolor="darkgrey",
     )
 
-    categories = dataset["model"].unique()
+    categories = dataset[x].unique()
 
     # Calculate the maximum height of the bars
     max_bar_height = max([patch.get_height() for patch in ax.patches])
@@ -365,12 +470,12 @@ def plot_highest_lowest(dataset):
         y_value = patch.get_height()
 
         # Find the highest y value for the current category
-        highest_y = dataset[(dataset["model"] == category)]["accuracy"].max()
+        highest_y = dataset[(dataset[x] == category)][y].max()
 
         # Find the highest and second lowest y value for the current category
-        lowest_y = dataset[(dataset["model"] == category)]["accuracy"].min()
+        lowest_y = dataset[(dataset[x] == category)][y].min()
 
-        feature_set = dataset["feature_set"].iloc[i]
+        feature_set = dataset[hue].iloc[i]
 
         cluster_center_x = ax.patches[i].get_x() + ax.patches[i].get_width() / 2
 
@@ -406,7 +511,7 @@ def plot_highest_lowest(dataset):
     ax.legend_.remove()
 
     plt.suptitle("Highest and lowest accuracy for each algorithm", fontsize=20)
-    plt.xlabel("Model")
-    plt.ylabel("Accuracy")
+    plt.xlabel(f"{x}")
+    plt.ylabel(f"{y}")
     plt.ylim(0.7, 1.02)
     plt.show()
