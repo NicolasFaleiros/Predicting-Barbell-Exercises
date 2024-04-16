@@ -2,7 +2,9 @@
 - This project was based on [Dave Ebbelaar](https://github.com/daveebbelaar)'s tracking barbell exercises [project](https://github.com/daveebbelaar/tracking-barbell-exercises). He collected the data during gym workouts where participants were performing various barbell exercises using the [Mbientlab's WristBand Sensor Research Kit](https://mbientlab.com/).
 - Also, the original code is associated with the book titled "Machine Learning for the Quantified Self" authored by Mark Hoogendoorn and Burkhardt Funk and published by Springer in 2017. The website of the book can be found on [ml4qs.org](https://ml4qs.org/).
   
-![Basic Barbell Exercises](https://github.com/NicolasFaleiros/Predicting-Barbell-Exercises/assets/41973874/4002eb01-bddd-42fe-92e7-8ffd03594a6c)
+<p align="center">
+<img src="images/Basic Barbell Exercises.png"/>
+</p>
 
 # 1. Description
 - This is an end-to-end machine learning project that uses Feedforward Neural Network, Random Forest and Simple Decision Tree to predict barbell exercises. It uses accelerometer and gyroscope data collected by a fitness device to predict which exercise was performed and how many repetitions.
@@ -21,7 +23,9 @@
     1. Accelerometer sensor measures acceleration (rate of change of velocity) forces acting on the device along three axes: X, Y, and Z. It can detect movement, tilt, vibration, and changes in speed.
     2. Gyroscope sensor measures the rate of rotation or angular velocity of the device around its three axes: X, Y, and Z. Provides information and can detect changes about the orientation, angular velocity, and rotational movement of the device.
 
-  ![image](https://github.com/NicolasFaleiros/Predicting-Barbell-Exercises/assets/41973874/f0cc292e-1f17-4964-876c-4abeb134bc8a)
+<p align="center">
+<img src="images/acc_gyr_illustration.png"/>
+</p>
 
 - We can use the data from these sensors to differentiate between barbell exercises, and build a machine learning model to predict what exercise is being performed by a new instance.
 - In order to maintain customer satisfaction and retention, the company whises to accurately label new instances of barbell training exercises from all clients. This will ensure that our fitness device company builds a good relationship with their customers in the sense of helping them structure and track their training routine.
