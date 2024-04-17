@@ -27,7 +27,7 @@
 <img src="images/acc_gyr_illustration.png"/>
 </p>
 
-- We can use the data from these sensors to differentiate between barbell exercises, and build a machine learning model to predict what exercise is being performed by a new instance.
+- We can use the data from these sensors to differentiate between barbell exercises, and build a machine learning model to predict which exercise is being performed by a new instance.
 - In order to maintain customer satisfaction and retention, the company whises to accurately label new instances of barbell training exercises from all clients. This will ensure that our fitness device company builds a good relationship with their customers in the sense of helping them structure and track their training routine.
 
 **3.3 What are the project objectives?**
@@ -72,6 +72,23 @@ Further explanation for each step can be found inside the python files, where I 
 - A "set" column was added to the dataframe in the proccess to distinguish between the sets performed by each subject.
 
 **6.3 Explore the data (exploratory data analysis)**
-- 
+- Analysis of accelerometer data from the x-axis and z-axis reveals clear distinctions among different exercises.
+
+<p align="center">
+    <img src="reports/figures/acc_gyr_comparison_per_label/acc_x.png" style="width: 60%; height: auto; display: inline-block;">
+    <img src="reports/figures/acc_gyr_comparison_per_label/acc_z.png" style="width: 60%; height: auto; display: inline-block;">
+</p>
+
+- Gyroscope data seems to be way more uniform than accelerometer, in a way that we would probably only be able to differentiate between exercises by analysing the amplitude and frequency of the signal, and not only its shape.
+
+- Not all participants performed all exercises. Number of participants per exercise:
+1. Bench Press: 5
+2. Squat: 5
+3. Overhead Press: 4
+4. Barbell Row: 4
+5. Deadlift: 3
+
+
+![til](reports/figures/acc_gyr_comparison_per_participant/comparison_per_participant.gif)
 
 
