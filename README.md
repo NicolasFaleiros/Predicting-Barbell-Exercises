@@ -74,21 +74,35 @@ Further explanation for each step can be found inside the python files, where I 
 **6.3 Explore the data (exploratory data analysis)**
 - Analysis of accelerometer data from the x-axis and z-axis reveals clear distinctions among different exercises.
 
-<p align="center">
-    <img src="reports/figures/acc_gyr_comparison_per_label/acc_x.png" style="width: 60%; height: auto; display: inline-block;">
-    <img src="reports/figures/acc_gyr_comparison_per_label/acc_z.png" style="width: 60%; height: auto; display: inline-block;">
+
+
+<p float="left" align="middle">
+  <img src="reports/figures/acc_gyr_comparison_per_label/acc_x.png" width=49% />
+  <img src="reports/figures/acc_gyr_comparison_per_label/acc_y.png" width=49% />
+  <img src="reports/figures/acc_gyr_comparison_per_label/acc_z.png" width=49% /> 
 </p>
 
 - Gyroscope data seems to be way more uniform than accelerometer, in a way that we would probably only be able to differentiate between exercises by analysing the amplitude and frequency of the signal, and not only its shape.
 
 - Not all participants performed all exercises. Number of participants per exercise:
-1. Bench Press: 5
-2. Squat: 5
-3. Overhead Press: 4
-4. Barbell Row: 4
-5. Deadlift: 3
+Bench Press **5**, Squat **5**, Overhead Press **4**, Barbell Row **4** and Deadlift **3**.
 
 
 ![til](reports/figures/acc_gyr_comparison_per_participant/comparison_per_participant.gif)
 
+<p align="center">
+<sub><sup> Images available at reports/figures/acc_gyr_comparison_per_participant/</sup></sub><br>
+</p>
 
+- After segmenting the data based on exercise type and participant, it is apparent that the accelerometer data shows a markedly higher level of dispersion and distinctiveness than the gyroscope data.
+
+<p float="left" align="middle">
+  <img src="reports/figures/acc_gyr_series/Bench (A).png" width=32% />
+  <img src="reports/figures/acc_gyr_series/Bench (B).png" width=32% /> 
+  <img src="reports/figures/acc_gyr_series/Bench (C).png" width=32% />
+  <img src="reports/figures/acc_gyr_series/Bench (D).png" width=32% />
+  <img src="reports/figures/acc_gyr_series/Bench (E).png" width=32% />
+</p>
+<p align="center">
+<sub><sup> Images available at reports/figures/acc_gyr_series/</sup></sub><br>
+</p>
