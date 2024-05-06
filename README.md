@@ -1,6 +1,6 @@
 # Predicting Barbell Exercises
 - This project was based on [Dave Ebbelaar](https://github.com/daveebbelaar)'s tracking barbell exercises [project](https://github.com/daveebbelaar/tracking-barbell-exercises). He collected the data during gym workouts where participants were performing various barbell exercises using the [Mbientlab's WristBand Sensor Research Kit](https://mbientlab.com/).
-- Also, the original code is associated with the book titled "Machine Learning for the Quantified Self" authored by Mark Hoogendoorn and Burkhardt Funk and published by Springer in 2017. The website of the book can be found on [ml4qs.org](https://ml4qs.org/).
+- Also, some of the code is associated with the book titled "Machine Learning for the Quantified Self" authored by Mark Hoogendoorn and Burkhardt Funk and published by Springer in 2017. The website of the book can be found on [ml4qs.org](https://ml4qs.org/).
   
 <p align="center">
 <img src="images/Basic Barbell Exercises.png"/>
@@ -61,15 +61,15 @@ Further explanation for each step can be found inside the python files, where I 
 # 5. Main business insights
 
 
-# 6. Explaining my approach
+# 6. Explaining the approach
 
 **6.1 Define the business problem**
 - The definition of the business problem was made in the introduction.
 
 **6.2 Converting raw data, reading CSV files, cleaning**
 - The original data collected by the device was separated by participant (5 subjects), type of exercise (Bench Press, Overhead Press, Barbell Row, Squat, Deadlift), category of exercise (medium, 5 reps, or heavy, 10 reps), and whether it is accelerometer or gyroscope data. Each are stored in separate csv files. The first objctive in the `make_dataset.py` file was to extract all these features from the file names and join all of them into a single dataframe.
-- The data was collected by the device multiple times a second. So I used a resample method to restructure the data in a way that every instance within 200ms is encompassed together by the mean and becomes the new observation.
-- A "set" column was added to the dataframe in the proccess to distinguish between the sets performed by each subject.
+- The data was collected by the device multiple times a second. So a resample method was used to restructure the data in a way that every instance within 200ms is encompassed together by the mean and becomes the new observation.
+- A "set" column was added to the dataframe in the proccess to distinguish between the exercise sets performed by each subject.
 
 **6.3 Explore the data (exploratory data analysis)**
 - Analysis of accelerometer data from the x-axis and z-axis reveals clear distinctions among different exercises.
@@ -106,3 +106,29 @@ Bench Press **5**, Squat **5**, Overhead Press **4**, Barbell Row **4** and Dead
 <p align="center">
 <sub><sup> Images available at reports/figures/acc_gyr_series/</sup></sub><br>
 </p>
+
+**6.4 Feature engineering, data cleaning and preprocessing**
+
+- In order to remove outliers, we have to check the data distribution because some outlier detection algorithms require a specific distribution (usually normal distribution).
+- We can see that the accelerometer data is not normally distributed, but the gyroscope data seems to follow a normal distribution reasonably well.
+
+
+<p float="left" align="middle">
+  <img src="reports/figures/distribution/distribution_all.png" width=100% />
+</p>
+<p align="center">
+<sub><sup> Image available at reports/figures/distribution/</sup></sub><br>
+</p>
+
+- On top of that, we can run statistical tests to make sure that the data is not normally distributed.
+
+|        | Shapiro             | D'Agostino              | Anderson-Darling         | Distribution                      |
+|--------|---------------------|-------------------------|--------------------------|-------------------------------|
+| acc_x  | 0.883, p=0.000      | 2506, p=0.000       | 275.302                  | <span style="color:indianred">Does not look Gaussian</span> |
+| acc_y  | 0.830, p=0.000      | 40635, p=0.000      | 691.349                  | <span style="color:indianred">Does not look Gaussian</span> |
+| acc_z  | 0.907, p=0.000      | 862, p=0.000        | 351.314                  | <span style="color:indianred">Does not look Gaussian</span> |
+| gyr_x  | 0.925, p=0.000      | 1713, p=0.000       | 128.498                  | <span style="color:indianred">Does not look Gaussian</span> |
+| gyr_y  | 0.719, p=0.000      | 2826, p=0.000       | 618.093                  | <span style="color:indianred">Does not look Gaussian</span> |
+| gyr_z  | 0.691, p=0.000      | 3062, p=0.000       | 586.905                  | <span style="color:indianred">Does not look Gaussian</span> |
+
+- In this case, as the data is not normally distributed, in order to detect and remove outliers, I will use a few methods that are not distribution based, such as: **IQR**, **Isolation Forest** and **Local Outlier Factor**.
