@@ -5,6 +5,13 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+
+import sys, os
+
+sys.path.append(os.path.abspath(os.path.join("..", "visualization")))
+# sys.path.append(os.path.abspath(os.path.join("..", "visualization", "visualize_utils")))
+from visualize_utils import *
 
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.ensemble import IsolationForest
@@ -22,7 +29,7 @@ from colorama import Fore, Back, Style
 
 df = pd.read_pickle("../../data/interim/01_data_processed.pkl")
 
-# ['acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z']
+# outlier_columns = ['acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z']
 outlier_columns = list(df.columns[:6])
 
 # --------------------------------------------------------------
@@ -71,12 +78,14 @@ def plot_binary_outliers(dataset, col, outlier_col, reset_index):
         dataset.index[~dataset[outlier_col]],
         dataset[col][~dataset[outlier_col]],
         "+",
+        color="#003049",
     )
     # Plot data points that are outliers in red
     ax.plot(
         dataset.index[dataset[outlier_col]],
         dataset[col][dataset[outlier_col]],
-        "r+",
+        "+",
+        color="#C1121F",
     )
 
     plt.legend(
@@ -91,27 +100,15 @@ def plot_binary_outliers(dataset, col, outlier_col, reset_index):
 
 # Check for normal distribution
 
-# Histogram plot
-df[outlier_columns[:3] + ["label"]].plot.hist(
-    by="label", figsize=(20, 20), layout=(3, 3)
-)
-df[outlier_columns[3:] + ["label"]].plot.hist(
-    by="label", figsize=(20, 20), layout=(3, 3)
-)
-plt.show()
+# Checking for all exercises
+columns = outlier_columns[:6]
+check_distribution(dataset=df, columns=columns, color="#003049")
 
-for col in outlier_columns:
-    df[col].plot.hist(figsize=(20, 20), layout=(3, 3))
-    plt.title(col)
-    plt.show()
-
-# Quantile-quantile plot
-import statsmodels.api as sm
-
-for col in outlier_columns:
-    sm.qqplot(df[col], line="45")
-    plt.title(col)
-    plt.show()
+# Checking distribution for each exercise label
+acc = outlier_columns[:3]
+gyr = outlier_columns[3:]
+colors = ["#003049", "#386641", "#C1121F"]
+check_distribution_by_label(dataset=df, label="label", colors=colors, acc=acc, gyr=gyr)
 
 # Statistical tests
 
