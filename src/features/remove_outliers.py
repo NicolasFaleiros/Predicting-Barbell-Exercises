@@ -48,7 +48,7 @@ df[outlier_columns[3:] + ["label"]].boxplot(by="label", figsize=(20, 10), layout
 plt.show()
 
 
-def plot_binary_outliers(dataset, col, outlier_col, reset_index):
+def plot_binary_outliers(dataset, col, outlier_col, reset_index, method=None):
     """
     Plot outliers in case of a binary outlier score. Here, the col specifies the real data
     column and outlier_col the columns with a binary value (outlier or not).
@@ -58,6 +58,7 @@ def plot_binary_outliers(dataset, col, outlier_col, reset_index):
         col (string): Column that you want to plot
         outlier_col (string): Outlier column marked with true/false
         reset_index (bool): whether to reset the index for plotting
+        method (string, optional): Name of the method used to detect outliers to use as a title for the plots
     """
 
     # Taken from: https://github.com/mhoogen/ML4QS/blob/master/Python3Code/util/VisualizeDataset.py
@@ -95,6 +96,12 @@ def plot_binary_outliers(dataset, col, outlier_col, reset_index):
         fancybox=True,
         shadow=True,
     )
+
+    if method is None:
+        method = ""
+
+    plt.title(f"{method}", fontweight="bold")
+
     plt.show()
 
 
@@ -119,9 +126,8 @@ value of the statistic - this may be taken as evidence against the null hypothes
 favor of the alternative: the weights were not drawn from a normal distribution.
 """
 
+
 # Shapiro Test
-
-
 def shapiro_test(data):
     alpha = 0.05
     for col in data.columns:
@@ -138,9 +144,8 @@ def shapiro_test(data):
 
 shapiro_test(df[outlier_columns])
 
+
 # D’Agostino’s K^2 Test
-
-
 def dagostino_test(data):
     alpha = 0.05
     for col in data.columns:
@@ -158,7 +163,6 @@ def dagostino_test(data):
 dagostino_test(df[outlier_columns])
 
 # Anderson-Darling Test
-
 for col in outlier_columns:
     result = anderson(df[col])
     print(f"\nColumn: {col} \nStatistics={result.statistic:.3f}")
@@ -173,18 +177,17 @@ for col in outlier_columns:
 
 
 """
-According to the tests performed the data does not seem to be normally distributed,
-thus when using a method to identify and remove outliers, we should use something that
-does not assume normality in the data.
+According to the tests performed the data does not seem to be normally distributed, but
+that could be due to our large sample set. Thus when using a method to identify and remove 
+outliers, we should use something that does not assume normality in the data.
 """
 
 # --------------------------------------------------------------
 # Interquartile range (distribution based)
 # --------------------------------------------------------------
 
+
 # Insert IQR function
-
-
 def mark_outliers_iqr(dataset, col):
     """Function to mark values as outliers using the IQR method.
 
@@ -217,9 +220,8 @@ def mark_outliers_iqr(dataset, col):
 # Local Outlier Factor
 # --------------------------------------------------------------
 
+
 # Insert LOF function
-
-
 def mark_outliers_lof(dataset, col, n_neighbors, contamination=0.1):
     """Function to mark values as outliers using the Local Outlier Factor method.
 
@@ -253,9 +255,8 @@ def mark_outliers_lof(dataset, col, n_neighbors, contamination=0.1):
 # Isolation Forest
 # --------------------------------------------------------------
 
+
 # Insert isolation forest function
-
-
 def mark_outliers_isolation_forest(dataset, col, contamination=0.1, random_state=42):
     """Function to mark values as outliers using the Isolation Forest method.
 
@@ -287,7 +288,6 @@ def mark_outliers_isolation_forest(dataset, col, contamination=0.1, random_state
 
 
 # Plot a single column
-
 col = "acc_x"
 dataset = mark_outliers_iqr(df, col)
 
@@ -302,7 +302,11 @@ for col in outlier_columns:
     dataset = mark_outliers_iqr(df, col)
 
     plot_binary_outliers(
-        dataset=dataset, col=col, outlier_col=col + "_outlier", reset_index=True
+        dataset=dataset,
+        col=col,
+        outlier_col=col + "_outlier",
+        reset_index=True,
+        method="IQR",
     )
 
 # LOF
@@ -310,7 +314,11 @@ for col in outlier_columns:
     dataset = mark_outliers_lof(df, col, n_neighbors=150)
 
     plot_binary_outliers(
-        dataset=dataset, col=col, outlier_col=col + "_outlier", reset_index=True
+        dataset=dataset,
+        col=col,
+        outlier_col=col + "_outlier",
+        reset_index=True,
+        method="LOF",
     )
 
 # Isolation Forest
@@ -318,7 +326,11 @@ for col in outlier_columns:
     dataset = mark_outliers_isolation_forest(df, col)
 
     plot_binary_outliers(
-        dataset=dataset, col=col, outlier_col=col + "_outlier", reset_index=True
+        dataset=dataset,
+        col=col,
+        outlier_col=col + "_outlier",
+        reset_index=True,
+        method="Isolation Forest",
     )
 
 
@@ -338,16 +350,17 @@ for col in outlier_columns:
 # Choose method and deal with outliers
 # --------------------------------------------------------------
 
-# Test on single column
+# Test on a single column
 col = "gyr_z"
-dataset = mark_outliers_lof(df, col, n_neighbors=35)
+dataset = mark_outliers_lof(
+    df, col, n_neighbors=35
+)  # I will use the Local Outlier Factor
 dataset[dataset["gyr_z_outlier"]]
 
 dataset.loc[dataset["gyr_z_outlier"], col] = np.nan
 
+
 # Create a function to loop over all columns and labels and remove outliers
-
-
 def remove_outliers_from_df(dataset, outlier_columns, n_neighbors):
     """
     Function to remove outliers from the original dataset, which were detected using
@@ -426,17 +439,19 @@ def plot_from_dict(dictionary):
 
     # Plot the data
     plt.figure(figsize=(10, 6))
-    plt.plot(x_values, y_values, marker="o", linestyle="-", label="Data")
+    plt.plot(
+        x_values, y_values, marker="o", linestyle="-", label="Data", color="#003049"
+    )
     plt.scatter(
-        min_x_value, min_y_value, color="indianred", label="Smallest Value", s=100
+        min_x_value, min_y_value, color="#C1121F", label="Smallest Value", s=100
     )
     plt.annotate(
         f"Smallest Value:\n{min_y_value} for n = {min_x_value}",
         xy=(min_x_value, min_y_value),
         xytext=(min_x_value + 1, min_y_value + 3000),
         fontsize=15,
-        color="indianred",
-        arrowprops=dict(arrowstyle="->", color="indianred", linewidth=3),
+        color="#C1121F",
+        arrowprops=dict(arrowstyle="->", color="#C1121F", linewidth=3),
     )
     plt.title("Number of Outliers Removed")
     plt.xlabel("N Neighbors")
