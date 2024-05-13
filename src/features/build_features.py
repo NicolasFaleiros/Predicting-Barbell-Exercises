@@ -64,8 +64,12 @@ subset = df_lowpass[df_lowpass["set"] == 45]
 print(subset["label"][0])
 
 fig, ax = plt.subplots(nrows=2, sharex=True, figsize=(20, 10))
-ax[0].plot(subset["acc_y"].reset_index(drop=True), label="raw data")
-ax[1].plot(subset["acc_y_lowpass"].reset_index(drop=True), label="butterworth filter")
+ax[0].plot(subset["acc_y"].reset_index(drop=True), label="raw data", color="#003049")
+ax[1].plot(
+    subset["acc_y_lowpass"].reset_index(drop=True),
+    label="butterworth filter",
+    color="#C1121F",
+)
 ax[0].legend(loc="upper center", bbox_to_anchor=(0.5, 1.15), fancybox=True, shadow=True)
 ax[1].legend(loc="upper center", bbox_to_anchor=(0.5, 1.15), fancybox=True, shadow=True)
 
@@ -141,8 +145,24 @@ for s in df_temporal["set"].unique():
 
 df_temporal = pd.concat(df_temporal_list)
 
-subset[["acc_x", "acc_x_temp_mean_ws_5", "acc_x_temp_std_ws_5"]].plot()
-plt.show()
+
+# Example: visualizing the temporal abstraction for the acc_x feature
+fig, ax = plt.subplots(nrows=2, sharex=True, figsize=(20, 10))
+ax[0].plot(subset["acc_x"].reset_index(drop=True), label="Raw data", color="#003049")
+ax[0].plot(
+    subset["acc_x_temp_mean_ws_5"].reset_index(drop=True),
+    label="Moving Average (5 points)",
+    color="#C1121F",
+)
+ax[0].legend(loc="upper center", bbox_to_anchor=(0.5, 1.15), fancybox=True, shadow=True)
+
+ax[1].plot(subset["acc_x"].reset_index(drop=True), label="Raw data", color="#003049")
+ax[1].plot(
+    subset["acc_x_temp_std_ws_5"].reset_index(drop=True),
+    label="Moving Standard Deviation (5 points)",
+    color="#C1121F",
+)
+ax[1].legend(loc="upper center", bbox_to_anchor=(0.5, 1.15), fancybox=True, shadow=True)
 
 # --------------------------------------------------------------
 # Frequency features
