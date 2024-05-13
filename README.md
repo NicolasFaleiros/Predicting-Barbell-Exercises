@@ -153,3 +153,39 @@ Bench Press **5**, Squat **5**, Overhead Press **4**, Barbell Row **4** and Dead
 <p align="center">
 <sub><sup> Images available at reports/figures/outliers/</sup></sub><br>
 </p>
+
+**6.4.1 Feature Engineering**
+
+- A [**Low-Pass Filter**](https://en.wikipedia.org/wiki/Butterworth_filter) was performed on the original features to reduce high frequency data. The idea is that the curves get "smoother", and we no longer have as much "noise", only the overall tendency.
+
+>"The lowpass filter can be applied to data that is of temporal nature, and assumes that there is a form of periodicity. Think about accelerometer data for example, if we are walking, we will see periodic measurements in our accelerometer data at a frequency around 1Hz as walking is a repetitive pattern. When we process our data, we can filter out such periodic constituents based upon their frequency. We could say for instance that any measurement we perform that is at a higher frequency than our walking behavior is irrelevant and can be considered as noise (they might actually hamper our machine learning process).
+>
+> — <cite>Hoogendoorn, M., & Funk, B. (2018). Machine learning for the quantified self. On the art of learning from sensory data. Pg. 38.</cite>
+
+<p float="left" align="middle">
+  <img src="reports/figures/feature_engineering/butterworth_filter.png" width=90% />
+</p>
+<p align="center">
+<sub><sup> Images available at reports/figures/feature_engineering/</sup></sub><br>
+</p>
+
+- A [**Principal Component Analysis (PCA)**](https://en.wikipedia.org/wiki/Principal_component_analysis) was performed to encompass the effect of the original features into three PCA components (dimensionaly reduction). The optimal number of components was determined using the [elbow method](https://en.wikipedia.org/wiki/Elbow_method_(clustering)).
+
+- [**Temporal Abstraction**](https://en.wikipedia.org/wiki/Moving_average) was employed to determine moving averages and moving standard deviations from the raw features. This process involved averaging or calculating standard deviations across a sliding window of n previous observations to generate our values.
+
+<p float="left" align="middle">
+  <img src="reports/figures/feature_engineering/temporal_abstraction.png" width=90% />
+</p>
+<p align="center">
+<sub><sup> Images available at reports/figures/feature_engineering/</sup></sub><br>
+</p>
+
+
+- A [**Discrete Fourier Transform**](https://en.wikipedia.org/wiki/Discrete_Fourier_transform) was used to break down the original curves into simpler patterns that capture the same behavior. It's like dissecting a complex puzzle into smaller pieces, each revealing part of the bigger picture. This way, we can hopefully expect to find a curve that will explain the target variable better than the original apparent noisy curve.
+
+<p float="left" align="middle">
+  <img src="reports/figures/feature_engineering/discrete_fourier_transform.png" width=50% />
+</p>
+<p align="center">
+<sub><sup> Images available at reports/figures/feature_engineering/</sup></sub><br>
+</p>
