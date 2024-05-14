@@ -123,6 +123,8 @@ Bench Press **5**, Squat **5**, Overhead Press **4**, Barbell Row **4** and Dead
 
 - On top of that, we can run statistical tests to make sure that the data is not normally distributed.
 
+<p float="left" align="middle">
+
 |        | [Shapiro](https://en.wikipedia.org/wiki/Shapiro%E2%80%93Wilk_test)             | [D'Agostino](https://en.wikipedia.org/wiki/D%27Agostino%27s_K-squared_test)              | [Anderson-Darling](https://en.wikipedia.org/wiki/Anderson%E2%80%93Darling_test)         | Distribution                      |
 |--------|---------------------|-------------------------|--------------------------|-------------------------------|
 | acc_x  | 0.883, p=0.000      | 2506, p=0.000       | 275.302                  | <span style="color:indianred">Does not look Gaussian</span> |
@@ -131,6 +133,10 @@ Bench Press **5**, Squat **5**, Overhead Press **4**, Barbell Row **4** and Dead
 | gyr_x  | 0.925, p=0.000      | 1713, p=0.000       | 128.498                  | <span style="color:indianred">Does not look Gaussian</span> |
 | gyr_y  | 0.719, p=0.000      | 2826, p=0.000       | 618.093                  | <span style="color:indianred">Does not look Gaussian</span> |
 | gyr_z  | 0.691, p=0.000      | 3062, p=0.000       | 586.905                  | <span style="color:indianred">Does not look Gaussian</span> |
+
+</p>
+
+
 
 - In this case, the statistical tests suggests that the data is not normally distributed, not even the gyroscope data. It could be due to our large sample set. As we have already visualized the distribution of the accelerometer data and saw that it is not normally distributed, we will use methods to detect and remove outliers that do not assume a particular distribution. I will use a few methods that are not distribution based, such as: **IQR**, **Isolation Forest** and **Local Outlier Factor**.
 
@@ -188,4 +194,81 @@ Bench Press **5**, Squat **5**, Overhead Press **4**, Barbell Row **4** and Dead
 </p>
 <p align="center">
 <sub><sup> Images available at reports/figures/feature_engineering/</sup></sub><br>
+</p>
+
+- Applied the [**K-Means Clustering**](https://en.wikipedia.org/wiki/K-means_clustering) algorithm to group similar data points. The optimal number of clusters was determined using the elbow method. While some clusters accurately represent certain exercises, others are less distinguishable when compared with the actual labeled data.
+
+<p float="left" align="middle">
+  <img src="reports/figures/feature_engineering/clustering.png" width=90% />
+</p>
+<p align="center">
+<sub><sup> Images available at reports/figures/feature_engineering/</sup></sub><br>
+</p>
+
+
+
+**6.5 Split the data into train and test sets**
+
+The train-test split was performed in a way that **75%** of the observations were used for the training set, and **25%** for the test set. The target variable was also used as a stratify parameter, to make sure that the proportion of labels remains roughly the same in both sets.
+
+**6.6 Model training, comparison, feature selection and tuning**
+
+- The engineered features were organized into separate lists and used to train the model. Subsequently, the model's performance was assessed for each feature set. This was done to understand whether the feature engineering efforts were paid off. One of the feature sets was obtained using a forward selection algorithm, to determine the **10** best performing features (evaluated using a simple decision tree).
+
+- The models used to classify the exercises were the following: **Random Forest** (RF), **Decision Tree** (DT), **Neural Networks** (NN), **Naive Bayes** (NB) and **K-Nearest Neighbors** (KNN).
+
+- My best results were the following
+
+
+<p float="left" align="middle">
+
+| model | feature_set        | accuracy |
+|-------|--------------------|----------|
+| **RF**    | selected_features  | 0.997932 |
+| **RF**    | feature_set_4      | 0.996898 |
+| **NN**    | feature_set_4      | 0.995863 |
+| **DT**    | selected_features  | 0.994829 |
+| **NN**    | feature_set_3      | 0.989659 |
+
+</p>
+<p align="center">
+<sub><sup> Feature sets available at src/models/train_model.py/</sup></sub><br>
+</p>
+
+<p float="left" align="middle">
+  <img src="reports/figures/models/performance_highest_highest.png" width=70% />
+  <img src="reports/figures/models/performance_highest_lowest.png" width=70% />
+</p>
+<p align="center">
+<sub><sup> Images available at reports/figures/models/</sup></sub><br>
+</p>
+
+- I selected the best performing one (**RF - selected_features**) and trained the model again using **gridsearch**. The gridsearch was used to evaluate the best performance of the random forest model on the following parameters: the number of trees in the forest (**n_estimators**), the minimum number of samples required to be at a leaf node (**min_samples_leaf**) and the criterion (**gini and entropy**). The results were good and are shown in the following confusion matrix.
+
+<p float="left" align="middle">
+  <img src="reports/figures/models/best_model_confusion_matrix.png" width=50% />
+</p>
+<p align="center">
+<sub><sup> Images available at reports/figures/models/</sup></sub><br>
+</p>
+
+**6.7 Final production model testing and evaluation**
+
+- Although good results were obtained, there is one thing that could be improved. The models were trained using data from all participants, which could be causing some data leakage, as the model could be evaluating its performance on a given observation in the test set and nourishing good returns as it had already trained using data from that particular participant in the training set.
+
+- Now we are going to train the model again but we will do it without using any data
+from participant `A`, and then we will evaluate the model solely using features from
+this participant.
+
+- We are doing this, of course, to ensure that our model is able to generalize its 
+good prediction capabilities to really new data (as if a new participant appeared to 
+use our fitness tracker device).
+
+- The results were also exceptional. The model is able to generalize its prediction capabilities to new data.
+
+<p float="left" align="middle">
+  <img src="reports/figures/models/no_leakage_best_model_confusion_matrix.png" width=50% />
+</p>
+<p align="center">
+<sub><sup> Images available at reports/figures/models/</sup></sub><br>
 </p>
