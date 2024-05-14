@@ -6,12 +6,13 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
 
-from learning_algorithms import ClassificationAlgorithms
-
 import sys, os
 
-sys.path.append(os.path.abspath(os.path.join("..", "visualization", "visualize")))
-from visualize import plot_highest_highest, plot_highest_lowest
+sys.path.append(os.path.abspath(os.path.join("..", "models")))
+from learning_algorithms import ClassificationAlgorithms
+
+sys.path.append(os.path.abspath(os.path.join("..", "visualization")))
+from visualize_utils import plot_highest_highest, plot_highest_lowest
 
 import itertools
 
@@ -23,7 +24,6 @@ plt.rcParams["figure.dpi"] = 100
 plt.rcParams["lines.linewidth"] = 2
 
 # Import the data
-
 df = pd.read_pickle("../../data/interim/03_data_features.pkl")
 
 # --------------------------------------------------------------
@@ -83,7 +83,7 @@ learner = ClassificationAlgorithms()
 max_features = 10
 
 """
-This piece of code may take a while to run !!!
+This next piece of code may take a while to run !!!
 
 Using a decision tree model, the forward selection loops over all of 
 our features and detects the best performing one. Then it loops all 
@@ -115,13 +115,13 @@ selected_features = [
     "acc_y_temp_mean_ws_5",
     "gyr_r_freq_0.0_Hz_ws_14",
     "duration",
-    "acc_z_freq_0.0_Hz_ws_14",
-    "gyr_r_freq_2.143_Hz_ws_14",
-    "acc_y_freq_0.0_Hz_ws_14",
-    "acc_z_max_freq",
-    "gyr_z_freq_1.429_Hz_ws_14",
-    "gyr_x_temp_std_ws_5",
-    "acc_x_freq_0.714_Hz_ws_1",
+    "acc_z",
+    "gyr_x_freq_2.143_Hz_ws_14",
+    "acc_x_freq_0.714_Hz_ws_14",
+    "acc_x_pse",
+    "acc_r_temp_mean_ws_5",
+    "gyr_x",
+    "acc_z_temp_std_ws_5",
 ]
 
 # Diminushing returns of accuracy plot
@@ -263,8 +263,8 @@ plt.legend(
     fontsize=18,
 )
 
-plot_highest_highest(score_df)
-plot_highest_lowest(score_df)
+plot_highest_highest(dataset=score_df, x="model", y="accuracy", hue="feature_set")
+plot_highest_lowest(dataset=score_df, x="model", y="accuracy", hue="feature_set")
 
 
 # --------------------------------------------------------------
@@ -272,8 +272,8 @@ plot_highest_lowest(score_df)
 # --------------------------------------------------------------
 
 """
-As the model who had the highest accuracy was the Feedforward Neural Network, using
-the `feature_set_4` set of features, I will begin by evaluating it a bit more closely,
+As the model who had the highest accuracy was the Random Forest, using
+the `selected_features` set of features, I will begin by evaluating it a bit more closely,
 and also retrain the model using gridsearch.
 """
 (
@@ -281,8 +281,8 @@ and also retrain the model using gridsearch.
     class_test_y,
     class_train_prob_y,
     class_test_prob_y,
-) = learner.feedforward_neural_network(
-    X_train[feature_set_4], y_train, X_test[feature_set_4], gridsearch=True
+) = learner.random_forest(
+    X_train[selected_features], y_train, X_test[selected_features], gridsearch=True
 )
 
 accuracy = accuracy_score(y_test, class_test_y)
@@ -344,8 +344,8 @@ use our fitness tracker device).
     class_test_y,
     class_train_prob_y,
     class_test_prob_y,
-) = learner.feedforward_neural_network(
-    X_train[feature_set_4], y_train, X_test[feature_set_4], gridsearch=True
+) = learner.random_forest(
+    X_train[selected_features], y_train, X_test[selected_features], gridsearch=True
 )
 
 accuracy = accuracy_score(y_test, class_test_y)
