@@ -135,6 +135,10 @@ def check_distribution_by_label(dataset, label, colors=None, **kwargs):
         plt.show()
 
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
 def plot_highest_highest(dataset, x, y, hue):
     """
     Function to plot a bar graph in which the x-axis is a categorical variable,
@@ -152,7 +156,7 @@ def plot_highest_highest(dataset, x, y, hue):
         None
     """
 
-    plt.figure(figsize=(15, 15))
+    plt.figure(figsize=(20, 10))
     ax = sns.barplot(
         x=x,
         y=y,
@@ -180,9 +184,12 @@ def plot_highest_highest(dataset, x, y, hue):
         x_value = patch.get_x() + patch.get_width() / 2
         y_value = patch.get_height()
 
+        # Skip patches with height equal to 0
+        if y_value == 0:
+            continue
+
         # Find the highest and second highest y values for the current category
         highest_y = dataset[(dataset[x] == category)][y].max()
-
         second_highest_y = dataset[(dataset[x] == category) & (dataset[y] < highest_y)][
             y
         ].max()
@@ -246,7 +253,7 @@ def plot_highest_lowest(dataset, x, y, hue):
         None
     """
 
-    plt.figure(figsize=(15, 15))
+    plt.figure(figsize=(20, 10))
     ax = sns.barplot(
         x=x,
         y=y,
@@ -273,6 +280,10 @@ def plot_highest_lowest(dataset, x, y, hue):
         # Extract the x and y values of the current bar
         x_value = patch.get_x() + patch.get_width() / 2
         y_value = patch.get_height()
+
+        # Skip patches with height equal to 0
+        if y_value == 0:
+            continue
 
         # Find the highest y value for the current category
         highest_y = dataset[(dataset[x] == category)][y].max()
