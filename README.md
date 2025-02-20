@@ -11,7 +11,7 @@
 - I organized the project development into components responsible for data ingestion, transformation, visualization, model training and evaluation. The entire analysis, from EDA to model training and evaluation, was made in these components, and everything is documented.
 
 # 2. Technologies and tools
-- The technologies and tools used were Python (Pandas, Numpy, Matplotlib, Seaborn, Scikit-Learn, Feedforward Neural Networks, Random Forest, Decision Tree, Principal Component Analysis, Low-Pass Filter, Fourier Transformation), Jupyter Notebook, Git and Github (version control), machine learning classification algorithms, statistics, Anaconda (terminal) and Visual Studio Code (project development environment).
+- The technologies and tools used were Python (Pandas, Numpy, Matplotlib, Seaborn, Scikit-Learn), Feedforward Neural Networks, Random Forest, Decision Tree, Principal Component Analysis, Low-Pass Filter, Fourier Transformation, Jupyter Notebook, Git and Github (version control), Machine Learning Classification Algorithms, Statistics, Anaconda (terminal) and Visual Studio Code (project development environment).
 
 # 3. Business problem and project objective
 
